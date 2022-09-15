@@ -1,16 +1,15 @@
 #!/usr/bin/python3
-"""state class for state  ORM"""
+"""must use SqlAlchemy"""
 
-from sqlalchemy import Column, String, Integer
+from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
 
 class State(Base):
-    """states class for table state"""
-    __tablename__ = "states"
-
-    id = Column(Integer, primary_key=True, autoincrement=True,
-                unique=True, nullable=False)
+    """State table"""
+    __tablename__ = 'states'
+    id = Column(Integer, primary_key=True,
+                nullable=False, autoincrement=True)
     name = Column(String(128), nullable=False)

@@ -1,22 +1,16 @@
 #!/usr/bin/python3
-"""prevention again SQL injection with prepared statements"""
+"""List all states from a database starting with N"""
 import sys
-import MySQLdb as mysql_
+import MySQLdb
 
 
-if __name__ == "__main__":
-    conn = mysql_.connect("localhost", *sys.argv[1:-1])
+if __name__ == '__main__':
+    conn = MySQLdb.connect(port=3306, user=sys.argv[1], passwd=sys.argv[2],
+                           db=sys.argv[3])
     cur = conn.cursor()
-    query = """SELECT * FROM states
-        WHERE states.name = %s
-        ORDER BY states.id;
-    """
-
-    cur.execute(query, (sys.argv[-1], ))
-    result = cur.fetchall()
-
-    for state in result:
-        print(state)
-
+    cur.execute("SELECT * FROM states WHERE name = %s;", (sys.argv[4],))
+    query_rows = cur.fetchall()
+    for row in query_rows:
+        print(row)
     cur.close()
     conn.close()

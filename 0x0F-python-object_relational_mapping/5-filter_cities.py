@@ -1,20 +1,20 @@
 #!/usr/bin/python3
-"""list cities from specific state"""
-from sys import argv
-import MySQLdb as mysql_
+"""List all states from a database starting with N"""
+import sys
+import MySQLdb
 
-if __name__ == "__main__":
-    connection = mysql_.connect("localhost", port=3306, user=argv[1],
-                                passwd=argv[2], db=argv[3])
-    cur = connection.cursor()
 
-    query = """SELECT DISTINCT cities.name FROM cities
-    JOIN states WHERE cities.state_id = (SELECT states.id FROM states
-    WHERE states.name = %s ORDER BY cities.id);"""
-
-    cur.execute(query, (argv[4],))
-
-    print(", ".join(map(lambda x: x[0], cur.fetchall())))
-
+if __name__ == '__main__':
+    conn = MySQLdb.connect(port=3306, user=sys.argv[1], passwd=sys.argv[2],
+                           db=sys.argv[3])
+    cur = conn.cursor()
+    cur.execute("SELECT `c`.`name` \
+    FROM `cities` as `c` \
+    INNER JOIN `states` as `s` \
+    ON `c`.`state_id` = `s`.`id` \
+    WHERE `s`.`name`=%s \
+    ORDER BY `c`.`id`;", (sys.argv[4],))
+    query_rows = cur.fetchall()
+    print(", ".join([row[0] for row in query_rows]))
     cur.close()
-    connection.close()
+    conn.close()

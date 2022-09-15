@@ -1,21 +1,20 @@
 #!/usr/bin/python3
-"""list cities by state"""
-from sys import argv
-import MySQLdb as mysql_
+"""List all states from a database starting with N"""
+import sys
+import MySQLdb
 
-if __name__ == "__main__":
-    connection = mysql_.connect("localhost", port=3306, user=argv[1],
-                                passwd=argv[2], db=argv[3])
-    cur = connection.cursor()
 
-    query = """SELECT cities.id, cities.name, states.name FROM cities
-    JOIN states WHERE cities.state_id = states.id ORDER BY cities.id;"""
-
-    cur.execute(query)
+if __name__ == '__main__':
+    conn = MySQLdb.connect(port=3306, user=sys.argv[1], passwd=sys.argv[2],
+                           db=sys.argv[3])
+    cur = conn.cursor()
+    cur.execute("SELECT `c`.`id`, `c`.`name`, `s`.`name` \
+    FROM `cities` as `c` \
+    INNER JOIN `states` as `s` \
+    ON `c`.`state_id` = `s`.`id` \
+    ORDER BY `c`.`id`")
     query_rows = cur.fetchall()
-
     for row in query_rows:
         print(row)
-
     cur.close()
-    connection.close()
+    conn.close()
