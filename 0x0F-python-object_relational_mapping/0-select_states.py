@@ -1,16 +1,16 @@
 #!/usr/bin/python3
-"""List all states from a database"""
+"""show all data in the database"""
 import sys
-import MySQLdb
+import MySQLdb as mysql_
 
+if __name__ == "__main__":
+    conn = mysql_.connect("localhost", *sys.argv[1:])
 
-if __name__ == '__main__':
-    conn = MySQLdb.connect(port=3306, user=sys.argv[1], passwd=sys.argv[2],
-                           db=sys.argv[3])
     cur = conn.cursor()
-    cur.execute("SELECT * FROM states")
-    query_rows = cur.fetchall()
-    for row in query_rows:
-        print(row)
+    cur.execute("SELECT * FROM states ORDER BY states.id;")
+    result = cur.fetchall()
+
+    for state in result:
+        print(state)
     cur.close()
     conn.close()

@@ -1,21 +1,31 @@
 #!/usr/bin/python3
-""" using the first method to get the first"""
+"""sqlalchemy select all columns statement"""
+from sys import argv
 
-
-import sys
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from model_state import State
+
+from model_state import Base, State
 
 if __name__ == "__main__":
-    engine = create_engine("mysql+mysqldb://{}:{}@localhost/{}"
-                           .format(sys.argv[1], sys.argv[2], sys.argv[3]),
-                           pool_pre_ping=True)
-    Session = sessionmaker(bind=engine)
+    db_url = "mysql+mysqldb://{}:{}@localhost/{}".format(
+                                                        argv[1],
+                                                        argv[2],
+                                                        argv[3]
+                                                        )
+    engine = create_engine(db_url, pool_pre_ping=True)
+    Base.metadata.create_all(engine)
+
+    Session = sessionmaker()
+    Session.configure(bind=engine)
     session = Session()
 
-    state = session.query(State).order_by(State.id).first()
-    if state is None:
-        print("Nothing")
+    query = session.query(State).order_by(State.id)
+
+    result = query.first()
+    if result:
+        print("{}: {}".format(1, result.name))
     else:
-        print("{}: {}".format(state.id, state.name))
+        print("Nothing")
+
+    session.close()

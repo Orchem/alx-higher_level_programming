@@ -1,21 +1,32 @@
 #!/usr/bin/python3
-"""filtering"""
+"""sqlalchemy select all columns statement"""
+from sys import argv
 
-
-import sys
-from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
 from model_state import Base, State
 
 if __name__ == "__main__":
-    engine = create_engine("mysql+mysqldb://{}:{}@localhost:3306/{}"
-                           .format(sys.argv[1], sys.argv[2], sys.argv[3]))
-    Session = sessionmaker(bind=engine)
+    db_url = "mysql+mysqldb://{}:{}@localhost/{}".format(
+                                                        argv[1],
+                                                        argv[2],
+                                                        argv[3]
+                                                        )
+    engine = create_engine(db_url, pool_pre_ping=True)
+    Base.metadata.create_all(engine)
+
+    Session = sessionmaker()
+    Session.configure(bind=engine)
     session = Session()
 
-    state = session.query(State.id).filter(State.name == sys.argv[4]).first()
+    query = session.query(State).filter(State.name == argv[4])
 
-    if (state is None):
-        print("Not found")
+    result = query.first()
+
+    if result:
+        print(result.id)
     else:
-        print(state.id)
+        print("Not found")
+
+    session.close()
